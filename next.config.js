@@ -34,13 +34,13 @@ const nextConfig = {
         hostname: "ugc.same-assets.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cedah.energia.gob.mx", // <--- Agregado del segundo bloque
+        pathname: "/**",
+      },
     ],
   },
 };
 
 module.exports = nextConfig;
-module.exports = {
-  images: {
-    domains: ['cedah.energia.gob.mx'],
-  },
-};
