@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Vehiculo {
-  numeroplaca: number;
+  numeroplaca: string;
   tipotransporte: string;
   vigencia: string;
   activo: boolean;
@@ -17,7 +17,7 @@ export default function VehiculosPage() {
     try {
       const res = await fetch("/api/vehiculos");
       const data = await res.json();
-      console.log("Vehículos cargados:", data);
+     //console.log("Vehículos cargados:", data);
       setVehiculos(data);
     } catch (err) {
       console.error("Error cargando vehículos", err);
@@ -26,13 +26,14 @@ export default function VehiculosPage() {
     }
   };
 
-  const toggleActivo = async (numeroplaca: number, nuevoEstado: boolean) => {
+  const toggleActivo = async (numeroplaca: string, nuevoEstado: boolean) => {
     try {
       await fetch("/api/vehiculos/estado", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ numeroplaca, activo: nuevoEstado }),
       });
+
 
       cargarVehiculos(); // recargar
     } catch (err) {

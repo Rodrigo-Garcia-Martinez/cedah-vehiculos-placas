@@ -37,7 +37,7 @@ export default function ValidatePlaca() {
       const response = await fetch('/api/validar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeroplaca: Number(numeroplaca) })
+        body: JSON.stringify({ numeroplaca: numeroplaca})
       });
 
       const data = await response.json();
