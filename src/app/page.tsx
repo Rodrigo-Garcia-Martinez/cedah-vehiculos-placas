@@ -10,7 +10,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b-8 border-[var(--gold)] box-content !box-content">
-
         <div className="h-0 bg-[var(--gold)]" />
         <div className="container mx-auto px-4 py-4 bg-[var(--maroon-custom)]">
           <div className="flex items-center gap-3 bg-[var(--maroon-custom)]">
@@ -22,6 +21,7 @@ export default function Home() {
                       className="w-40 h-30"
                       />
             </div>
+        
           </div>
         </div>
       </header>
@@ -228,12 +228,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-
+  
         {/* Footer Pleca */}
         <div className="h-12 bg-gradient-to-r from-[#8B2C4A] via-[#691C32] to-[#8B2C4A] relative overflow-hidden">
-          <div className="absolute inset-0 opacity-30" style={{
+          {/* <div className="absolute inset-0 opacity-30" style={{
             backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 40px)'
-          }} />
+          }} /> */}
+             <div className="absolute inset-0 opacity-30" style={{
+            backgroundImage: "url('https://framework-gb.cdn.gob.mx/gobmx/img/pleca.svg')"}}>
+              </div>
         </div>
       </footer>
     </div>
