@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import RegisterPlaca from "@/components/RegisterPlaca";
 
 interface Vehiculo {
   numeroplaca: string;
@@ -51,6 +52,7 @@ export default function VehiculosPage() {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">Vehículos Registrados</h1>
 
+<RegisterPlaca/>
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-200 text-left">
