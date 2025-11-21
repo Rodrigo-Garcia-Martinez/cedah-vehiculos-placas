@@ -2,7 +2,7 @@ import { sql } from '@vercel/postgres';
 
 export interface Vehiculo {
   id: number;
-  numeroplaca: number;
+  numeroplaca: string;
   tipotransporte: string;
   vigencia: string;
   activo: boolean;
@@ -10,11 +10,11 @@ export interface Vehiculo {
   updated_at?: string;
 }
 
-export async function getVehiculoByPlaca(numeroPlaca: number): Promise<Vehiculo | null> {
+export async function getVehiculoByPlaca(numeroplaca: string): Promise<Vehiculo | null> {
   try {
     const result = await sql<Vehiculo>`
       SELECT * FROM vehiculo 
-      WHERE numeroplaca = ${numeroPlaca}
+      WHERE numeroplaca = ${numeroplaca}
       LIMIT 1
     `;
     return result.rows[0] || null;
