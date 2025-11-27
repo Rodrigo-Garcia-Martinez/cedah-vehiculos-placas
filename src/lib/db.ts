@@ -1,4 +1,5 @@
 import { sql } from '@vercel/postgres';
+import { Pool } from 'pg';
 
 export interface Vehiculo {
   id: number;
@@ -8,6 +9,28 @@ export interface Vehiculo {
   activo: boolean;
   created_at?: string;
   updated_at?: string;
+}
+const connectionString = process.env.DATABASE_URL as string;
+
+
+if (!connectionString) {
+throw new Error('DATABASE_URL no está definido en .env');
+}
+
+
+export const pool = new Pool({
+connectionString,
+// Neon requiere SSL en muchos setups; si tu connection string ya lo incluye, está bien.
+});
+//Funcion para conexion
+export async function query(text: string, params?: any[]) {
+const client = await pool.connect();
+try {
+const res = await client.query(text, params);
+return res;
+} finally {
+client.release();
+}
 }
 
 export async function getVehiculoByPlaca(numeroplaca: string): Promise<Vehiculo | null> {
