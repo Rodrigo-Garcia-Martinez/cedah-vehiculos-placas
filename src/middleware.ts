@@ -23,9 +23,10 @@ export async function middleware(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const token = authHeader?.replace('Bearer ', '');
   
-  // Permitir acceso a endpoints de auth sin token
-  if (path.startsWith('/api/auth/')) {
-    console.log('✅ Permitiendo acceso a /api/auth');
+  // Permitir acceso a endpoints públicos sin token
+  const publicEndpoints = ['/api/auth/', '/api/validar'];
+  if (publicEndpoints.some(endpoint => path.startsWith(endpoint))) {
+    console.log('✅ Permitiendo acceso a endpoint público:', path);
     return NextResponse.next();
   }
 
@@ -34,7 +35,7 @@ export async function middleware(request: NextRequest) {
     hasToken: !!token,
   });
 
-  // Verificar si el token es válido para otras APIs
+  // Verificar si el token es válido para otras APIs protegidas
   if (!token) {
     console.log('❌ Token no encontrado en API');
     return NextResponse.json(
