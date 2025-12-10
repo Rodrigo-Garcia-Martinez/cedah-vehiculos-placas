@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVehiculoByPlaca } from "@/lib/db";
 
+// Esta API es PÚBLICA - no requiere autenticación
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
