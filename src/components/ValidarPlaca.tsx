@@ -70,14 +70,24 @@ export default function ValidatePlaca() {
                     className="flex-1 px-6 text-gray-600 placeholder-gray-400 outline-none font-semibold uppercase text-sm tracking-wide"
                     disabled={loading}
                 />
-                <button
-                  type="submit"
-                  disabled={loading || !numeroplaca.trim()}
-                  className="px-6 py-2 bg-[#8B2C4A] text-white rounded-md hover:bg-[#691C32] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                >
-                  {loading ? 'Validando...' : 'Validar'}
-                </button>
+                
               </div>
+              <div className="flex justify-center">
+  <button
+    type="submit"
+    disabled={loading || !numeroplaca.trim()}
+    className="px-6 py-2 bg-[#8B2C4A] text-white rounded-md hover:bg-[#691C32] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+  >
+    <div className="frc-captcha" data-sitekey="A1SVA4PDN3VIVGTFFO28MB07H034RLBME5VOS8EIFN9VSU9266QCOMPGDG"></div>
+    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+    </svg>
+
+    {loading ? 'Validando...' : 'Validar'}
+  </button>
+</div>
+
+              
           </form>
 
           {result && (
@@ -98,54 +108,83 @@ export default function ValidatePlaca() {
                       <h4 className={`text-lg font-bold ${
                         result.vehiculo.esVigente ? 'text-green-900' : 'text-red-900'
                       }`}>
-                        {result.vehiculo.esVigente ? 'Placa Vigente' : 'Placa Vencida'}
+                        {result.vehiculo.esVigente ? 'Validación Exitosa - Placa Registrada en CNE' : 'Placa Vencida'}
                       </h4>
-                      <p className={`text-sm ${
-                        result.vehiculo.esVigente ? 'text-green-700' : 'text-red-700'
-                      }`}>
-                        {result.vehiculo.esVigente 
-                          ? `Válida por ${result.vehiculo.diasRestantes} días más`
-                          : 'Esta placa ha expirado'
-                        }
-                      </p>
                     </div>
                   </div>
+<div className="border border-green-600 rounded-lg overflow-hidden">
 
-                  <div className="space-y-3 bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <Car className="w-5 h-5 text-gray-600" />
-                      <span className="font-semibold text-gray-700">Número de Placa:</span>
-                      <span className="text-gray-900 font-mono">{result.vehiculo.numeroplaca}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Car className="w-5 h-5 text-gray-600" />
-                      <span className="font-semibold text-gray-700">Tipo de Transporte:</span>
-                      <span className="text-gray-900">{result.vehiculo.tipotransporte}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-gray-600" />
-                      <span className="font-semibold text-gray-700">Vigencia:</span>
-                      <span className="text-gray-900">
-                          {new Date(result.vehiculo.vigencia).toISOString().split('T')[0]}
+  {/* ENCABEZADO VERDE */}
+  <div className="bg-green-700 text-white px-4 py-3 flex items-center gap-3">
+    <svg
+      className="w-6 h-6 text-white"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clipRule="evenodd"
+      />
+    </svg>
 
-                      </span>
-                    </div>
-                  </div>
+    <span className="font-semibold text-lg">
+      Validación Exitosa - Placa Registrada en CNE
+    </span>
+  </div>
+
+  {/* CONTENIDO */}
+  <div className="bg-white p-5 space-y-3">
+
+    <div className="flex items-center gap-2">
+      <Car className="w-5 h-5 text-gray-700" />
+      <span className="font-semibold text-gray-800">Placa:</span>
+      <span className="text-gray-900 font-mono">{result.vehiculo.numeroplaca}</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <Car className="w-5 h-5 text-gray-700" />
+      <span className="font-semibold text-gray-800">Tipo Transporte:</span>
+      <span className="text-gray-900">{result.vehiculo.tipotransporte}</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <Calendar className="w-5 h-5 text-gray-700" />
+      <span className="font-semibold text-gray-800">Vigencia:</span>
+      <span className="text-gray-900">
+        {new Date(result.vehiculo.vigencia).toISOString().split('T')[0]}
+      </span>
+    </div>
+
+    {/* Estatus Actual */}
+    <div className="pt-4 border-t border-gray-200">
+      <div className="flex items-center gap-2 text-green-700 font-semibold text-lg">
+        <svg
+          className="w-6 h-6 text-green-700"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clipRule="evenodd"
+          />
+        </svg>
+        AUTORIZADO
+      </div>
+    </div>
+  </div>
+</div>
+
                 </div>
               ) : (
-                <div className="bg-yellow-50 border-2 border-yellow-500 rounded-lg p-6">
+                <div className="bg-red-200 border-2 border-red-300 rounded-lg p-1">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="w-8 h-8 text-yellow-600 flex-shrink-0" />
+                    <AlertCircle className="w-8 h-8 text-yellow-900 flex-shrink-0" />
                     <div>
                       <h4 className="text-lg font-bold text-yellow-900">
-                        Placa No Encontrada
+                        Error: Datos de placa no registrados en CNE
                       </h4>
-                      <p className="text-sm text-yellow-700 mt-1">
-                        {result.message || 'El número de placa ingresado no está registrado en el sistema'}
-                      </p>
-                      <p className="text-sm text-yellow-700 mt-2">
-                        Por favor verifique el número o regístrela en la pestaña de Registro.
-                      </p>
                     </div>
                   </div>
                 </div>
