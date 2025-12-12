@@ -44,7 +44,7 @@ export default function RegisterPlaca({
   } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const tiposTransporte = ["AUTOTANQUE"];
+  const tiposTransporte = ["VEHICULOS DE REPARTO"];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
