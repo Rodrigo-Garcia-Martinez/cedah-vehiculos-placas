@@ -1,31 +1,83 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, XCircle, AlertCircle, Calendar, Car, CarFront } from 'lucide-react';
+import { CheckCircle, AlertCircle, CarFront } from 'lucide-react';
+import { FriendlyCaptchaSDK } from '@friendlycaptcha/sdk';
 
+/* =========================
+   CONFIGURACIÓN CAPTCHA
+========================= */
+const SITE_KEY = 'FCMH682ENJIB14E2'; // 👈 DEBE empezar con pk_
+
+const sdk = new FriendlyCaptchaSDK({ apiEndpoint: 'global' });
+
+/* =========================
+   TIPOS
+========================= */
 interface ValidationResult {
   found: boolean;
   vehiculo?: {
     numeroplaca: string;
     tipotransporte: string;
     vigencia: string;
-    activo: boolean;
-    esVigente: boolean;
-    diasRestantes: number;
   };
   message?: string;
 }
 
-export default function ValidatePlaca() {
+/* =========================
+   COMPONENTE PRINCIPAL
+========================= */
+export default function ValidarPlaca() {
   const [numeroplaca, setNumeroPlaca] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ValidationResult | null>(null);
 
-  const handleValidate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-    if (!numeroplaca.trim()) return;
+  const captchaContainerRef = useRef<HTMLDivElement>(null);
+  const captchaWidgetRef = useRef<any>(null);
+
+  /* =========================
+     INICIALIZAR CAPTCHA
+  ========================= */
+  useEffect(() => {
+    if (!showCaptcha || !captchaContainerRef.current) return;
+    if (captchaWidgetRef.current) return; // evita doble render (StrictMode)
+
+    captchaWidgetRef.current = sdk.createWidget({
+      element: captchaContainerRef.current,
+      sitekey: SITE_KEY
+    });
+
+    const handleSolved = (e: any) => {
+      setCaptchaToken(e.detail.response);
+    };
+
+    captchaContainerRef.current.addEventListener(
+      'frc:widget.complete',
+      handleSolved
+    );
+
+    return () => {
+      captchaContainerRef.current?.removeEventListener(
+        'frc:widget.complete',
+        handleSolved
+      );
+      captchaWidgetRef.current?.destroy();
+      captchaWidgetRef.current = null;
+    };
+  }, [showCaptcha]);
+
+  /* =========================
+     SUBMIT
+  ========================= */
+  const handleValidate = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    if (!numeroplaca || !captchaToken) return;
 
     setLoading(true);
     setResult(null);
@@ -34,59 +86,89 @@ export default function ValidatePlaca() {
       const response = await fetch('/api/validar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeroplaca })
+        body: JSON.stringify({
+          numeroplaca,
+          captcha: captchaToken
+        })
       });
 
       const data = await response.json();
       setResult(data);
-
-    } catch (error) {
+    } catch {
       setResult({
         found: false,
         message: 'Error al conectar con el servidor'
       });
     } finally {
       setLoading(false);
+      if (captchaWidgetRef.current) {
+        captchaWidgetRef.current.reset();
+      }
+      setCaptchaToken(null);
     }
   };
 
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <Card className="shadow-lg">
       <CardContent className="p-6">
 
-        {/* FORMULARIO */}
         <form onSubmit={handleValidate} className="space-y-4">
 
-          {/* Input con icono */}
+          {/* INPUT PLACA */}
           <div className="flex shadow-md rounded-md overflow-hidden h-14 border border-gray-200 bg-white">
-            <div className="bg-[#691C32] w-16 flex items-center justify-center flex-shrink-0">
+            <div className="bg-[#691C32] w-16 flex items-center justify-center">
               <CarFront className="text-white w-6 h-6" />
             </div>
 
             <input
               type="text"
               value={numeroplaca}
-              onChange={(e) => setNumeroPlaca(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.toUpperCase();
+                setNumeroPlaca(value);
+
+                if (value.trim().length >= 5) {
+                  setShowCaptcha(true);
+                } else {
+                  setShowCaptcha(false);
+                  setCaptchaToken(null);
+                }
+              }}
               placeholder="INGRESE NÚMERO DE PLACA (EJ: 58AP1G)"
               className="flex-1 px-6 text-gray-600 placeholder-gray-400 outline-none font-semibold uppercase text-sm tracking-wide"
               disabled={loading}
             />
           </div>
 
-          {/* BOTÓN */}
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              disabled={loading || !numeroplaca.trim()}
-              className="px-6 py-2 bg-[#8B2C4A] text-white rounded-md hover:bg-[#691C32] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
-            >
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-              </svg>
+          {/* CAPTCHA */}
+          {showCaptcha && (
+            <div className="flex justify-center mt-4">
+              <div ref={captchaContainerRef} />
+            </div>
+          )}
 
-              {loading ? 'Validando...' : 'Validar'}
-            </button>
-          </div>
+          {/* BOTÓN VALIDAR (solo aparece si captcha es correcto) */}
+          {captchaToken && (
+            <div className="flex justify-center mt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-2 bg-[#8B2C4A] text-white rounded-md hover:bg-[#691C32] disabled:opacity-50 transition-colors font-medium flex items-center gap-2"
+              >
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                {loading ? 'Validando...' : 'Validar'}
+              </button>
+            </div>
+          )}
 
         </form>
 
@@ -95,59 +177,30 @@ export default function ValidatePlaca() {
           <div className="mt-6 animate-fade-in">
 
             {result.found && result.vehiculo ? (
-
-              /* CONTENEDOR PRINCIPAL */
               <div className="border border-green-700 rounded-lg overflow-hidden">
-
-                {/* BARRA SUPERIOR VERDE */}
                 <div className="bg-green-700 text-white px-4 py-3 flex items-center gap-3">
-                  <CheckCircle className="w-6 h-6 text-white" />
+                  <CheckCircle className="w-6 h-6" />
                   <span className="font-semibold text-lg">
                     Validación Exitosa - Placa Registrada en CNE
                   </span>
                 </div>
 
-                {/* CONTENIDO EN DOS COLUMNAS */}
-                <div className="bg-white p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                  {/* COLUMNA IZQUIERDA */}
-                  <div className="space-y-3">
-                    <p><strong>Placa:</strong> {result.vehiculo.numeroplaca}</p>
-                    <p><strong>Tipo Transporte:</strong> {result.vehiculo.tipotransporte}</p>
-                    <p>
-                      <strong>Vigencia:</strong>{" "}
-                      {new Date(result.vehiculo.vigencia).toISOString().split("T")[0]}
-                    </p>
-                  </div>
-
-                  {/* COLUMNA DERECHA */}
-                  <div className="flex flex-col items-start md:items-center justify-center">
-                    <span className="text-gray-800 font-semibold text-lg">
-                      Estatus Actual de Unidad:
-                    </span>
-
-                    <div className="flex items-center gap-2 text-green-700 font-bold text-2xl mt-2">
-                      <CheckCircle className="w-7 h-7 text-green-700" />
-                      AUTORIZADO
-                    </div>
-                  </div>
-
+                <div className="bg-white p-6 space-y-2">
+                  <p><strong>Placa:</strong> {result.vehiculo.numeroplaca}</p>
+                  <p><strong>Tipo Transporte:</strong> {result.vehiculo.tipotransporte}</p>
+                  <p>
+                    <strong>Vigencia:</strong>{' '}
+                    {result.vehiculo.vigencia.split('T')[0]}
+                  </p>
                 </div>
-
               </div>
-
             ) : (
-
-              /* ERROR */
-              <div className="bg-red-200 border-2 border-red-300 rounded-lg p-1">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="w-8 h-8 text-yellow-900" />
-                  <h4 className="text-lg font-bold text-yellow-900">
-                    Error: Datos de placa no registrados en CNE
-                  </h4>
-                </div>
+              <div className="bg-red-200 border-2 border-red-300 rounded-lg p-3 flex items-center gap-3">
+                <AlertCircle className="w-6 h-6 text-yellow-900" />
+                <span className="font-bold text-yellow-900">
+                  Error: Datos de placa no registrados en CNE
+                </span>
               </div>
-
             )}
 
           </div>
