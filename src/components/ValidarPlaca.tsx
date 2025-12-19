@@ -207,21 +207,14 @@ export default function ValidarPlaca() {
                 <div className="bg-green-600 text-white px-4 py-3 flex gap-2 items-center">
                   <CheckCircle />
                   <span className="font-semibold">
-                    Placa válida
+                    Validación Exitosa - Placa Registrada en CNE
                   </span>
                 </div>
 
                 <div className="bg-white p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <p><strong>Placa:</strong> {result.vehiculo.numeroplaca}</p>
                   <p><strong>Tipo:</strong> {result.vehiculo.tipotransporte}</p>
-                  <p><strong>Vigencia:</strong> {result.vehiculo.vigencia}</p>
-
-                  {typeof result.vehiculo.diasRestantes === 'number' && (
-                    <p>
-                      <strong>Días restantes:</strong>{' '}
-                      {result.vehiculo.diasRestantes}
-                    </p>
-                  )}
+                  <p><strong>Vigencia:</strong>{' '} {result.vehiculo.vigencia}</p>
                 </div>
               </div>
             ) : (
