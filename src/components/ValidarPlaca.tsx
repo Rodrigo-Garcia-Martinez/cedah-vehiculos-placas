@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, AlertCircle, CarFront } from 'lucide-react';
+import { CheckCircle, AlertCircle, CarFront, ShieldCheck } from 'lucide-react';
 import { FriendlyCaptchaSDK } from '@friendlycaptcha/sdk';
 
 /* =========================
    CONFIGURACIÓN CAPTCHA
 ========================= */
 const SITE_KEY = 'FCMH682ENJIB14E2'; // 👈 DEBE empezar con pk_
-
-const sdk = new FriendlyCaptchaSDK({ apiEndpoint: 'global' });
 
 /* =========================
    TIPOS
@@ -34,22 +32,36 @@ export default function ValidarPlaca() {
   const [result, setResult] = useState<ValidationResult | null>(null);
 
   const [showCaptcha, setShowCaptcha] = useState(false);
+  const [captchaStarted, setCaptchaStarted] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const captchaContainerRef = useRef<HTMLDivElement>(null);
   const captchaWidgetRef = useRef<any>(null);
+  const captchaSdkRef = useRef<any>(null); // 👈 SDK SOLO EN CLIENTE
 
   /* =========================
      INICIALIZAR CAPTCHA
   ========================= */
   useEffect(() => {
-    if (!showCaptcha || !captchaContainerRef.current) return;
-    if (captchaWidgetRef.current) return; // evita doble render (StrictMode)
+    // 🚨 Esto garantiza que solo corre en el navegador
+    if (typeof window === 'undefined') return;
+    if (!showCaptcha || !captchaStarted || !captchaContainerRef.current) return;
+    if (captchaWidgetRef.current) return;
 
-    captchaWidgetRef.current = sdk.createWidget({
-      element: captchaContainerRef.current,
-      sitekey: SITE_KEY
-    });
+    // Crear SDK SOLO aquí
+    if (!captchaSdkRef.current) {
+      captchaSdkRef.current = new FriendlyCaptchaSDK({
+        apiEndpoint: 'global'
+      });
+    }
+
+    captchaWidgetRef.current =
+    captchaSdkRef.current.createWidget({
+    element: captchaContainerRef.current,
+    sitekey: SITE_KEY,
+    startMode: 'auto' // 👈 clave
+  });
+
 
     const handleSolved = (e: any) => {
       setCaptchaToken(e.detail.response);
@@ -68,7 +80,7 @@ export default function ValidarPlaca() {
       captchaWidgetRef.current?.destroy();
       captchaWidgetRef.current = null;
     };
-  }, [showCaptcha]);
+  }, [showCaptcha, captchaStarted]);
 
   /* =========================
      SUBMIT
@@ -105,6 +117,7 @@ export default function ValidarPlaca() {
         captchaWidgetRef.current.reset();
       }
       setCaptchaToken(null);
+      setCaptchaStarted(false);
     }
   };
 
@@ -134,6 +147,7 @@ export default function ValidarPlaca() {
                   setShowCaptcha(true);
                 } else {
                   setShowCaptcha(false);
+                  setCaptchaStarted(false);
                   setCaptchaToken(null);
                 }
               }}
@@ -143,14 +157,39 @@ export default function ValidarPlaca() {
             />
           </div>
 
-          {/* CAPTCHA */}
-          {showCaptcha && (
+          {/* TARJETA CLICK TO START */}
+          {showCaptcha && !captchaStarted && (
+            <div
+              onClick={() => setCaptchaStarted(true)}
+              className="cursor-pointer border border-gray-300 rounded-md p-4 flex items-center gap-4 bg-white hover:bg-gray-50 transition"
+            >
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-gray-700" />
+              </div>
+
+              <div className="flex flex-col">
+                <span className="font-semibold text-gray-800">
+                  Anti-Robot Verification
+                </span>
+                <span className="text-sm text-gray-600">
+                  Click to start verification
+                </span>
+              </div>
+
+              <span className="ml-auto text-xs text-gray-400">
+                FriendlyCaptcha ↗
+              </span>
+            </div>
+          )}
+
+          {/* CAPTCHA REAL */}
+          {showCaptcha && captchaStarted && (
             <div className="flex justify-center mt-4">
               <div ref={captchaContainerRef} />
             </div>
           )}
 
-          {/* BOTÓN VALIDAR (solo aparece si captcha es correcto) */}
+          {/* BOTÓN VALIDAR */}
           {captchaToken && (
             <div className="flex justify-center mt-4">
               <button
@@ -158,13 +197,6 @@ export default function ValidarPlaca() {
                 disabled={loading}
                 className="px-6 py-2 bg-[#8B2C4A] text-white rounded-md hover:bg-[#691C32] disabled:opacity-50 transition-colors font-medium flex items-center gap-2"
               >
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                </svg>
                 {loading ? 'Validando...' : 'Validar'}
               </button>
             </div>
@@ -174,35 +206,16 @@ export default function ValidarPlaca() {
 
         {/* RESULTADO */}
         {result && (
-          <div className="mt-6 animate-fade-in">
-
-            {result.found && result.vehiculo ? (
-              <div className="border border-green-700 rounded-lg overflow-hidden">
-                <div className="bg-green-700 text-white px-4 py-3 flex items-center gap-3">
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="font-semibold text-lg">
-                    Validación Exitosa - Placa Registrada en CNE
-                  </span>
-                </div>
-
-                <div className="bg-white p-6 space-y-2">
-                  <p><strong>Placa:</strong> {result.vehiculo.numeroplaca}</p>
-                  <p><strong>Tipo Transporte:</strong> {result.vehiculo.tipotransporte}</p>
-                  <p>
-                    <strong>Vigencia:</strong>{' '}
-                    {result.vehiculo.vigencia.split('T')[0]}
-                  </p>
-                </div>
+          <div className="mt-6">
+            {result.found ? (
+              <div className="bg-green-200 p-4 rounded flex gap-2">
+                <CheckCircle /> Placa válida
               </div>
             ) : (
-              <div className="bg-red-200 border-2 border-red-300 rounded-lg p-3 flex items-center gap-3">
-                <AlertCircle className="w-6 h-6 text-yellow-900" />
-                <span className="font-bold text-yellow-900">
-                  Error: Datos de placa no registrados en CNE
-                </span>
+              <div className="bg-red-200 p-4 rounded flex gap-2">
+                <AlertCircle /> Placa no encontrada
               </div>
             )}
-
           </div>
         )}
 
