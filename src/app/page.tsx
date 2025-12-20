@@ -191,22 +191,20 @@ export default function Home() {
 
             {/* Consulta pública */}
             <div className="text-center py-3 border-t">
-              <small className="text-gray-500 text-[15px]">
+<small className="text-gray-500 text-[15px]">
   Consulta pública{' '}
-  {new Date()
-    .toLocaleString('en-US', {
-      timeZone: 'America/Mexico_City',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-    })
-    .replace(',', '')
-    .toUpperCase()}
+  {new Date().toLocaleString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).replace(',', '')}
 </small>
+
 
 
             </div>
