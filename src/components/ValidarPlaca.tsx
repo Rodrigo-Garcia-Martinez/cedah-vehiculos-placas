@@ -219,7 +219,7 @@ export default function ValidarPlaca() {
   <div className="border border-green-600 rounded-xl overflow-hidden max-w-md mx-auto shadow-sm">
 
     {/* HEADER */}
-    <div className="bg-white text-green-600 px-4 py-4 flex items-center gap-3">
+    <div className="bg-white-600 text-white px-4 py-4 flex items-center gap-3">
       <CheckCircle className="w-6 h-6 flex-shrink-0" />
       <span className="font-semibold text-base sm:text-lg leading-tight">
         Validación Exitosa – Placa Registrada en CNE
@@ -254,37 +254,33 @@ export default function ValidarPlaca() {
       </div>
 
       {/* ESTATUS */}
-<div className="pt-3 border-t border-gray-200">
-  <div className="flex items-center gap-2 sm:gap-3 whitespace-nowrap">
+      <div className="pt-3 border-t border-gray-200">
+        <p className="font-semibold text-sm sm:text-base mb-3">
+          Estatus Actual de la Unidad:
+        </p>
 
-    {/* TEXTO */}
-    <span className="font-semibold text-sm sm:text-base text-gray-900">
-      Estatus Actual de la Unidad:
-    </span>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* CÍRCULO */}
+          <div className="w-9 h-9 rounded-full bg-green-700 flex items-center justify-center flex-shrink-0">
+            <svg
+              className="w-4 h-4 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
 
-    {/* ICONO */}
-    <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-green-700 flex items-center justify-center flex-shrink-0">
-      <svg
-        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          fillRule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clipRule="evenodd"
-        />
-      </svg>
-    </div>
-
-    {/* ESTATUS */}
-    <span className="text-green-700 font-bold text-lg sm:text-2xl tracking-wide">
-      AUTORIZADO
-    </span>
-
-  </div>
-</div>
-
+          {/* TEXTO */}
+          <span className="text-green-700 font-bold text-xl sm:text-2xl tracking-wide">
+            AUTORIZADO
+          </span>
+        </div>
+      </div>
 
     </div>
   </div>
