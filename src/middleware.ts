@@ -25,12 +25,13 @@ export async function middleware(request: NextRequest) {
   
   // Permitir acceso a endpoints públicos sin token
 const publicEndpoints = ['/api/auth/', '/api/validar', '/api/health', '/api/db-check'];
-  if (publicEndpoints.some(endpoint => path.startsWith(endpoint))) {
+if (publicEndpoints.some(endpoint => path.startsWith(endpoint))) {
   const res = NextResponse.next();
   res.headers.set('x-mw-public', '1');
   res.headers.set('x-mw-path', path);
   return res;
 }
+
 
   console.log('🔍 Validando API:', {
     path,

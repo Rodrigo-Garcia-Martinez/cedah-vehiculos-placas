@@ -1,26 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVehiculoByPlaca } from "@/lib/db";
+import { sql } from "@vercel/postgres";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
-// Esta API es PÚBLICA - no requiere autenticación
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({} as any));
-
     let numeroPlaca = body?.numeroPlaca ?? body?.numeroplaca;
 
     if (!numeroPlaca) {
-      return NextResponse.json(
-        { error: "Número de placa requerido" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Número de placa requerido" }, { status: 400 });
     }
 
-    // Convertir placa siempre a string y mayúsculas
     numeroPlaca = String(numeroPlaca).toUpperCase().trim();
 
+    // ✅ Diagnóstico BD (temporal)
+    const reg = await sql`SELECT to_regclass('public.vehiculo') AS t;`;
+    console.log("to_regclass(public.vehiculo):", reg.rows?.[0]?.t);
+
+    const cols = await sql`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema='public' AND table_name='vehiculo'
+      ORDER BY ordinal_position;
+    `;
+    console.log("vehiculo columns:", cols.rows.map(r => r.column_name));
     // Buscar vehículo
     const vehiculo = await getVehiculoByPlaca(numeroPlaca);
 
