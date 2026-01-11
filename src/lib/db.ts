@@ -96,3 +96,14 @@ export async function getAllVehiculos(): Promise<Vehiculo[]> {
     throw new Error('Error al consultar la base de datos');
   }
 }
+export async function getVehiculoBySerie(serie: string): Promise<Vehiculo | null> {
+  const result = await sql<Vehiculo>`
+    SELECT id, "numeroPlaca", "tipoTransporte", vigencia, activo, serie, created_at, updated_at
+    FROM vehiculo
+    WHERE serie = ${serie}
+    LIMIT 1
+  `;
+  return result.rows[0] || null;
+}
+
+
