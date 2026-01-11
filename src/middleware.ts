@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   const token = authHeader?.replace('Bearer ', '');
   
   // Permitir acceso a endpoints públicos sin token
-const publicEndpoints = ['/api/auth/', '/api/validar', '/api/health'];
+const publicEndpoints = ['/api/auth/', '/api/validar', '/api/health', '/api/db-check'];
   if (publicEndpoints.some(endpoint => path.startsWith(endpoint))) {
     console.log('✅ Permitiendo acceso a endpoint público:', path);
     return NextResponse.next();
