@@ -125,7 +125,7 @@ export default function ValidePage() {
                       Número de Placa:
                     </dt>
                     <dd className="text-gray-900 font-mono text-lg">
-                      {resultado.numeroplaca}
+                      {resultado.numeroPlaca}
                     </dd>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-green-200">

@@ -33,7 +33,7 @@ export default function RegisterPlaca({
   onRegistrationSuccess,
 }: RegisterPlacaProps) {
   const [formData, setFormData] = useState({
-    numeroplaca: "",
+    numeroPlaca: "",
     tipoTransporte: "",
     vigencia: "",
   });
@@ -58,7 +58,7 @@ export default function RegisterPlaca({
 
   const handleSuccess = (message: string) => {
     setResult({ success: true, message });
-    setFormData({ numeroplaca: "", tipoTransporte: "", vigencia: "" });
+    setFormData({ numeroPlaca: "", tipoTransporte: "", vigencia: "" });
 
     // Cierra el diálogo 2 segundos después de mostrar la confirmación
     setTimeout(() => {
@@ -78,7 +78,7 @@ export default function RegisterPlaca({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          numeroplaca: formData.numeroplaca,
+          numeroPlaca: formData.numeroPlaca,
           tipoTransporte: formData.tipoTransporte,
           vigencia: formData.vigencia,
         }),
@@ -141,17 +141,17 @@ export default function RegisterPlaca({
           {/* Campo Número de Placa */}
           <div>
             <label
-              htmlFor="numeroplaca"
+              htmlFor="numeroPlaca"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               <Car className="w-4 h-4 inline mr-1 text-gray-500" />
               Número de Placa *
             </label>
             <Input
-              id="numeroplaca"
+              id="numeroPlaca"
               type="text"
-              name="numeroplaca"
-              value={formData.numeroplaca}
+              name="numeroPlaca"
+              value={formData.numeroPlaca}
               onChange={handleChange}
               placeholder="Ej: 58AP1G"
               className="text-lg uppercase tracking-wider"

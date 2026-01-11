@@ -23,7 +23,7 @@ const SITE_KEY = 'FCMH682ENJIB14E2';
 interface ValidationResult {
   found: boolean;
   vehiculo?: {
-    numeroplaca: string;
+    numeroPlaca: string;
     tipotransporte: string;
     vigencia: string;
   };
@@ -45,7 +45,7 @@ type CaptchaSDK = {
 };
 
 export default function ValidarPlaca() {
-  const [numeroplaca, setNumeroPlaca] = useState('');
+  const [numeroPlaca, setnumeroPlaca] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ValidationResult | null>(null);
 
@@ -109,7 +109,7 @@ export default function ValidarPlaca() {
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    if (!numeroplaca || !captchaToken) return;
+    if (!numeroPlaca || !captchaToken) return;
 
     setLoading(true);
     setResult(null);
@@ -119,7 +119,7 @@ export default function ValidarPlaca() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          numeroplaca,
+          numeroPlaca,
           captcha: captchaToken
         })
       });
@@ -171,7 +171,7 @@ export default function ValidarPlaca() {
               onChange={(e) => {
                 const value = e.target.value as 'placa' | 'serie';
                 setTipoBusqueda(value);
-                setNumeroPlaca('');
+                setnumeroPlaca('');
                 resetCaptchaAndResult();
               }}
               className="flex-1 px-6 outline-none font-semibold bg-white"
@@ -188,10 +188,10 @@ export default function ValidarPlaca() {
             </div>
 
             <input
-              value={numeroplaca}
+              value={numeroPlaca}
               onChange={(e) => {
                 const value = e.target.value.toUpperCase();
-                setNumeroPlaca(value);
+                setnumeroPlaca(value);
                 setResult(null);
 
                 // 🔑 AQUÍ SÍ DESTRUIMOS EL WIDGET
@@ -275,7 +275,7 @@ export default function ValidarPlaca() {
                     <p className="text-sm sm:text-base">
                       <strong>Placa:</strong>{' '}
                       <span className="break-words">
-                        {result.vehiculo.numeroplaca}
+                        {result.vehiculo.numeroPlaca}
                       </span>
                     </p>
 

@@ -9,8 +9,8 @@ import { useSessionAuth } from "@/hooks/useSessionAuth";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Vehiculo {
-  numeroplaca: string;
-  tipotransporte: string;
+  numeroPlaca: string;
+  tipoTransporte: string;
   vigencia: string;
   activo: boolean;
 }
@@ -51,12 +51,12 @@ export default function VehiculosPage() {
     }
   };
 
-  const toggleActivo = async (numeroplaca: string, nuevoEstado: boolean) => {
+  const toggleActivo = async (numeroPlaca: string, nuevoEstado: boolean) => {
     try {
       await fetchWithAuth("/api/estado", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ numeroplaca, activo: nuevoEstado }),
+        body: JSON.stringify({ numeroPlaca, activo: nuevoEstado }),
       });
 
       cargarVehiculos();
@@ -123,11 +123,11 @@ export default function VehiculosPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {vehiculos.map((v) => (
                     <tr
-                      key={v.numeroplaca}
+                      key={v.numeroPlaca}
                       className="hover:bg-indigo-50/20 transition duration-150"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {v.numeroplaca}
+                        {v.numeroPlaca}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         {v.tipotransporte}
@@ -144,7 +144,7 @@ export default function VehiculosPage() {
                         <Button
                           variant={v.activo ? "default" : "destructive"}
                           size="sm"
-                          onClick={() => toggleActivo(v.numeroplaca, !v.activo)}
+                          onClick={() => toggleActivo(v.numeroPlaca, !v.activo)}
                           className={`transition-colors duration-200 ${
                             v.activo
                               ? "bg-green-600 hover:bg-green-700"

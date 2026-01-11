@@ -24,9 +24,9 @@ export async function PUT(request: NextRequest) {
     await jwtVerify(token, JWT_SECRET);
 
     // Obtener datos del body
-    const { numeroplaca, activo } = await request.json();
+    const { numeroPlaca, activo } = await request.json();
 
-    if (!numeroplaca) {
+    if (!numeroPlaca) {
       return NextResponse.json(
         { error: "Número de placa requerido" },
         { status: 400 }
@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest) {
     await sql`
       UPDATE vehiculo
       SET activo = ${activo}
-      WHERE numeroplaca = ${numeroplaca}
+      WHERE numeroPlaca = ${numeroPlaca}
     `;
 
     return NextResponse.json({ 
