@@ -2,19 +2,21 @@ import { sql } from '@vercel/postgres';
 
 export interface Vehiculo {
   id: number;
-  numeroplaca: string;
-  tipotransporte: string;
+  numeroPlaca: string;
+  tipoTransporte : string;
   vigencia: string;
   activo: boolean;
+  serie: string;
   created_at?: string;
   updated_at?: string;
 }
 
-export async function getVehiculoByPlaca(numeroplaca: string): Promise<Vehiculo | null> {
+
+export async function getVehiculoByPlaca(numeroPlaca: string): Promise<Vehiculo | null> {
   try {
     const result = await sql<Vehiculo>`
       SELECT * FROM vehiculo
-      WHERE numeroplaca = ${numeroplaca}
+      WHERE numeroPlaca = ${numeroPlaca}
       LIMIT 1
     `;
     return result.rows[0] || null;
@@ -24,15 +26,16 @@ export async function getVehiculoByPlaca(numeroplaca: string): Promise<Vehiculo 
   }
 }
 
+
 export async function createVehiculo(
   numeroPlaca: string,
-  tipotransporte: string,
+  tipoTransporte : string,
   vigencia: string
 ): Promise<Vehiculo> {
   try {
     const result = await sql<Vehiculo>`
-      INSERT INTO vehiculo (numeroplaca, tipotransporte, vigencia, activo)
-      VALUES (${numeroPlaca}, ${tipotransporte}, ${vigencia}, true)
+      INSERT INTO vehiculo (numeroPlaca, tipoTransporte , vigencia, activo)
+      VALUES (${numeroPlaca}, ${tipoTransporte }, ${vigencia}, true)
       RETURNING *
     `;
     return result.rows[0];

@@ -5,10 +5,10 @@ import { createVehiculo } from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { numeroplaca, tipoTransporte, vigencia } = body;
+    const { numeroPlaca, tipoTransporte, vigencia } = body;
 
     // Validaciones
-    if (!numeroplaca || numeroplaca.trim() === '') {
+    if (!numeroPlaca || numeroPlaca.trim() === '') {
       return NextResponse.json(
         { error: 'Número de placa inválido' },
         { status: 400 }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     const vehiculo = await createVehiculo(
-      numeroplaca,
+      numeroPlaca,
       tipoTransporte,
       vigencia
     );
